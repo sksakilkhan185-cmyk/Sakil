@@ -1,0 +1,38 @@
+name: Build Android APK
+
+on:
+workflow_dispatch:
+push:
+branches:
+- main
+
+jobs:
+build:
+runs-on: ubuntu-latest
+
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v4
+
+  - name: Set up JDK
+    uses: actions/setup-java@v4
+    with:
+      distribution: temurin
+      java-version: '17'
+
+  - name: Unzip project
+    run: |
+      unzip -o ai-trading-scanner-pro.zip -d project
+
+  - name: Build APK
+    run: |
+      cd project
+      find . -name gradlew -type f
+      chmod +x gradlew
+      ./gradlew assembleDebug
+
+  - name: Upload APK
+    uses: actions/upload-artifact@v4
+    with:
+      name: AI-Trading-Scanner-APK
+      path: project/**/build/outputs/apk/debug/*.apk
